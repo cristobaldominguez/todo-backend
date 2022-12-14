@@ -17,13 +17,17 @@ const cookie_name = process.env.COOKIE_NAME
 // POST /auth/signup
 async function post_signup(req) {
   const email = req.sanitize(req.body.email)
+  const first_name = req.sanitize(req.body.first_name)
+  const last_name = req.sanitize(req.body.last_name)
   const { password, password_confirm } = req.body
 
   if (!(email && password)) return req.error = new AuthError({ message: 'Data not formatted properly' })
   if (password !== password_confirm) return req.error = new AuthError({ message: 'Password and password confirm fields doesn\'t match' })
 
+  if (!(first_name || last_name)) return req.error = new AuthError({ message: 'Please provide a full name' })
+
   // creating a new user
-  const user = { email, password }
+  const user = { email, password, first_name, last_name }
 
   // generate salt to hash password
   const salt = await bcrypt.genSalt(10)
@@ -96,6 +100,7 @@ function set_user(req, _, next) {
     if (err) return req.user = null
 
     req.user = user
+    req.user.name = `${user.first_name} ${user.last_name}`
     next()
   })
 }

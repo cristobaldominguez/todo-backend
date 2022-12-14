@@ -4,10 +4,10 @@ import pool from '../pool.js'
 import AuthError from '../../errors/auth_error.js'
 
 // User Creation
-async function create_user({ email, password }) {
+async function create_user({ email, password, first_name, last_name }) {
   const query = {
-    text: `INSERT INTO users (email, password) VALUES ($1, $2) RETURNING *`,
-    values: [email, password]
+    text: `INSERT INTO users (email, password, first_name, last_name) VALUES ($1, $2, $3, $4) RETURNING *`,
+    values: [email, password, first_name, last_name]
   }
 
   try {
