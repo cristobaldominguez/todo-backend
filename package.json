@@ -1,7 +1,7 @@
 {
-  "name": "express-basic-boilerplate",
-  "version": "1.1.0",
-  "description": "A Basic Express Boilerplate",
+  "name": "todo-backend",
+  "version": "1.0.0",
+  "description": "A Backend For a Todo App",
   "main": "server.js",
   "type": "module",
   "scripts": {
