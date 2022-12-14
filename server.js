@@ -1,7 +1,6 @@
 import dotenv from 'dotenv'
 import { port } from './config.js'
 import express from 'express'
-import { engine } from 'express-handlebars'
 import expressSanitizer from 'express-sanitizer'
 import cookieParser from 'cookie-parser'
 
@@ -40,11 +39,6 @@ app.use(expressSanitizer())
 
 // Public Folder
 app.use(express.static('public'))
-
-// Handlebars
-app.engine('.hbs', engine({ extname: '.hbs', defaultLayout: 'main' }))
-app.set('view engine', '.hbs')
-app.set('views', './views')
 
 // App Routes
 app.use(mainRoutes)
