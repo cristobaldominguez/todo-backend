@@ -1,6 +1,5 @@
--- psql -d db_name -a -f db/migrations/01_create_table_users.sql
+-- psql -d react_node_todo -a -f db/migrations/01_create_table_users.sql
 
-DROP TABLE IF EXISTS users;
 CREATE TABLE users(
   id SERIAL,
 
