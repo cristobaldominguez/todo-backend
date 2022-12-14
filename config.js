@@ -28,6 +28,17 @@ const db_default_options = {
   port: Number(process.env.DB_PORT) || 5432
 }
 
+const whitelist = ['http://localhost:8080']
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
+
 const db = { ...db_default_options, ...env_db_config }
 
-export { port, root, db, redirect, email_regex }
+export { port, root, db, redirect, email_regex, corsOptions }

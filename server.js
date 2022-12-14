@@ -1,8 +1,9 @@
+import cors from 'cors'
 import dotenv from 'dotenv'
-import { port } from './config.js'
 import express from 'express'
-import expressSanitizer from 'express-sanitizer'
 import cookieParser from 'cookie-parser'
+import expressSanitizer from 'express-sanitizer'
+import { port, corsOptions } from './config.js'
 
 // ErrorHandling
 import 'express-async-errors'
@@ -26,6 +27,7 @@ dotenv.config()
 const app = express()
 
 // body-parser -> From Express 4.16+
+app.use(cors(corsOptions))
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(express.text())
