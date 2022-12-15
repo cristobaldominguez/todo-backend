@@ -28,7 +28,7 @@ const db_default_options = {
   port: Number(process.env.DB_PORT) || 5432
 }
 
-const whitelist = ['http://localhost:8080']
+const whitelist = [undefined, 'http://localhost:8080']
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
