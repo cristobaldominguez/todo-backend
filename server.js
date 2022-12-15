@@ -12,7 +12,7 @@ import 'express-async-errors'
 import mainRoutes from './routes/main.js'
 import authRoutes from './routes/auth.js'
 import boardRoutes from './routes/board.js'
-import exampleRoutes from './routes/example.js'
+import todosRoutes from './routes/todos.js'
 
 // Controllers
 import { authenticate, set_user } from './services/auth_services.js'
@@ -47,7 +47,7 @@ app.use(express.static('public'))
 app.use(mainRoutes)
 app.use('/auth', authRoutes)
 app.use('/boards', authenticate, set_user, boardRoutes)
-app.use('/examples', authenticate, set_user, exampleRoutes)
+app.use('/todos', authenticate, set_user, todosRoutes)
 
 // Redirect to 404 Page
 app.get("*", (_, res) => {

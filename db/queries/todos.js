@@ -1,13 +1,9 @@
 import pool from '../pool.js'
 
-
-
-/* Examples */
-/*
-async function get_todos() {
+async function read_todos(board_id) {
   const query = {
-    text: `SELECT * FROM todos WHERE active = true order by id`,
-    values: []
+    text: `SELECT id, content, done, board_id, active FROM todos WHERE active = true AND board_id = $1 order by id`,
+    values: [board_id]
   }
 
   try {
@@ -20,10 +16,9 @@ async function get_todos() {
   }
 }
 
-
-async function get_todo(id) {
+async function read_todo(id) {
   const query = {
-    text: `SELECT * FROM todos WHERE id = $1 AND active = true `,
+    text: `SELECT id, content, done FROM todos WHERE id = $1 AND active = true `,
     values: [id]
   }
 
@@ -37,10 +32,10 @@ async function get_todo(id) {
   }
 }
 
-async function new_todo(content, done = false) {
+async function create_todo({ content, done, board_id }) {
   const query = {
-    text: `INSERT INTO todos (content, done) VALUES ($1, $2) RETURNING *`,
-    values: [content, done]
+    text: `INSERT INTO todos (content, done, board_id) VALUES ($1, $2, $3) RETURNING *`,
+    values: [content, done, board_id]
   }
 
   try {
@@ -53,10 +48,10 @@ async function new_todo(content, done = false) {
   }
 }
 
-async function update_todo(id, content, done = false) {
+async function update_todo({ id, content, done }) {
   const query = {
-    text: `UPDATE todos SET content = $1, done = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING *`,
-    values: [content, done, id]
+    text: `UPDATE todos SET content = $2, done = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING *`,
+    values: [id, content, done]
   }
 
   try {
@@ -69,7 +64,7 @@ async function update_todo(id, content, done = false) {
   }
 }
 
-async function delete_todo(id) {
+async function destroy_todo(id) {
   const query = {
     text: `UPDATE todos SET active = false, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING *`,
     values: [id]
@@ -86,10 +81,9 @@ async function delete_todo(id) {
 }
 
 export {
-  get_todo,
-  get_todos,
-  new_todo,
+  read_todo,
+  read_todos,
+  create_todo,
   update_todo,
-  delete_todo
+  destroy_todo
 }
-*/
