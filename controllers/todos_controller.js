@@ -6,7 +6,6 @@ async function read_todos(req, res) {
   const { board_id } = req.params
   const todos = await todos_services.get_todos(board_id)
 
-  res.set({ 'content-type': 'application/json; charset=utf-8' })
   res.status(200).json(todos)
 }
 
@@ -15,7 +14,6 @@ async function read_todo(req, res) {
   const { id } = req.params
   const board = await todos_services.get_todo(id, req.user.id)
 
-  res.set({ 'content-type': 'application/json; charset=utf-8' })
   res.status(200).json(board)
 }
 
@@ -28,7 +26,6 @@ async function create_todo(req, res) {
 
   const todo = await todos_services.post_todo({ content, done: done || false, board_id })
 
-  res.set({ 'content-type': 'application/json; charset=utf-8' })
   res.status(201).send(JSON.stringify(todo))
 }
 
@@ -38,7 +35,6 @@ async function update_todo(req, res) {
 
   const board = await todos_services.put_todo({ id, ...req.body })
 
-  res.set({ 'content-type': 'application/json; charset=utf-8' })
   res.status(200).json(board)
 }
 
@@ -50,7 +46,6 @@ async function destroy_todo(req, res) {
 
   const board = await todos_services.delete_todo(id)
 
-  res.set({ 'content-type': 'application/json; charset=utf-8' })
   res.status(200).json(board)
 }
 

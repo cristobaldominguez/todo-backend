@@ -5,7 +5,6 @@ import boards_services from '../services/boards_services.js'
 async function read_boards(req, res) {
   const boards = await boards_services.get_boards(req.user.id)
 
-  res.set({ 'content-type': 'application/json; charset=utf-8' })
   res.status(200).json(boards)
 }
 
@@ -14,7 +13,6 @@ async function read_board(req, res) {
   const { id } = req.params
   const board = await boards_services.get_board(id, req.user.id)
 
-  res.set({ 'content-type': 'application/json; charset=utf-8' })
   res.status(200).json(board)
 }
 
@@ -28,7 +26,6 @@ async function create_board(req, res) {
 
   const board = await boards_services.post_board({ name, icon, colour, user_id: req.user.id })
 
-  res.set({ 'content-type': 'application/json; charset=utf-8' })
   res.status(201).send(JSON.stringify(board))
 }
 
@@ -39,7 +36,6 @@ async function update_board(req, res) {
 
   const board = await boards_services.put_board({ id, name, icon, colour, user_id: req.user.id })
 
-  res.set({ 'content-type': 'application/json; charset=utf-8' })
   res.status(200).send(JSON.stringify(board))
 }
 
@@ -51,7 +47,6 @@ async function destroy_board(req, res) {
 
   const board = await boards_services.delete_board(id)
 
-  res.set({ 'content-type': 'application/json; charset=utf-8' })
   res.status(202).send(JSON.stringify(board))
 }
 

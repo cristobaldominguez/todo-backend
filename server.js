@@ -20,6 +20,7 @@ import { authenticate, set_user } from './services/auth_services.js'
 // Middlewares
 import errorMiddleware from './middlewares/error_middleware.js'
 import acceptsFormatMiddleware from './middlewares/accepts_format_middleware.js'
+import setContentType from './middlewares/set_content_type.js'
 
 // dotEnv Config
 dotenv.config()
@@ -39,6 +40,9 @@ app.use(acceptsFormatMiddleware)
 
 // express-sanitizer middleware
 app.use(expressSanitizer())
+
+// Sets Content-Type header
+app.use(setContentType)
 
 // Public Folder
 app.use(express.static('public'))
