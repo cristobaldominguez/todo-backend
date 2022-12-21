@@ -100,8 +100,7 @@ function set_user(req, _, next) {
   jwt.verify(req.token, accessTokenSecret, (err, user) => {
     if (err) return req.user = null
 
-    req.user = user
-    req.user.name = `${user.first_name} ${user.last_name}`
+    req.user = {...user, name: `${user.first_name} ${user.last_name}`}
     next()
   })
 }
