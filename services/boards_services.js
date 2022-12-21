@@ -8,7 +8,7 @@ import { read_boards, read_board, create_board, update_board, destroy_board } fr
 async function get_boards(req) {
   const { id: user_id } = req.user
   try {
-    return await read_boards(user_id)
+    return await read_boards({ user_id })
     
   } catch (error) {
     return error
@@ -20,7 +20,7 @@ async function get_board(req) {
   const { id: user_id } = req.user
 
   try {
-    const board = await read_board(id, user_id)
+    const board = await read_board({ id, user_id })
     if (board.error) throw new AccessError({ message: board.error.message, status: board.error.status })
 
     return board
@@ -76,7 +76,7 @@ async function delete_board(req) {
   try {
     if (!id) throw new AccessError({ message: 'Please provide a board id!', status: 400 })
 
-    return await destroy_board(id, user_id)
+    return await destroy_board({ id, user_id })
 
   } catch (error) {
     return error

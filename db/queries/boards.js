@@ -2,7 +2,7 @@ import pool from '../pool.js'
 import AccessError from '../../errors/access_error.js'
 import ContentError from '../../errors/content_error.js'
 
-async function read_boards(user_id) {
+async function read_boards({ user_id }) {
   const query = {
     text: `SELECT id, name, icon, colour FROM boards WHERE active = true AND user_id = $1 order by id`,
     values: [user_id]
@@ -18,7 +18,7 @@ async function read_boards(user_id) {
   }
 }
 
-async function read_board(id, user_id) {
+async function read_board({ id, user_id }) {
   const query = {
     text: `SELECT id, name, icon, colour FROM boards WHERE id = $1 AND user_id = $2 AND active = true `,
     values: [id, user_id]
@@ -80,7 +80,7 @@ async function update_board({ id, name, icon, colour }) {
   }
 }
 
-async function destroy_board(id, user_id) {
+async function destroy_board({ id, user_id }) {
   const query = {
     text: `UPDATE boards SET active = false, updated_at = CURRENT_TIMESTAMP WHERE id = $1 AND user_id = $2 RETURNING id, name, icon, colour`,
     values: [id, user_id]

@@ -3,13 +3,14 @@ import { read_todos, read_todo, create_todo, update_todo, destroy_todo } from '.
 
 async function get_todos(req) {
   const { board_id } = req.params
-  return await read_todos(board_id)
+
+  return await read_todos({ board_id })
 }
 
 async function get_todo(req) {
   const { id } = req.params
-  const { id: user_id } = req.user
-  return await read_todo(id, user_id)
+
+  return await read_todo({ id })
 }
 
 async function post_todo(req) {
@@ -31,7 +32,7 @@ async function put_todo(req) {
   const { content, done } = req.body
 
   try {
-    const todo = await read_todo(id)
+    const todo = await read_todo({ id })
     const new_todo = { 
       ...todo,
       content: content || todo.content,
@@ -50,7 +51,7 @@ async function delete_todo(req) {
   if (!id) { return res.status(400).json({ message: 'Please provide a board id!' }) }
 
   try {
-    return await destroy_todo(id)
+    return await destroy_todo({ id })
     
   } catch (error) {
     return error

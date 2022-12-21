@@ -1,7 +1,7 @@
 import pool from '../pool.js'
 import ContentError from '../../errors/content_error.js'
 
-async function read_todos(board_id) {
+async function read_todos({ board_id }) {
   const query = {
     text: `SELECT id, content, done, board_id FROM todos WHERE active = true AND board_id = $1 order by id`,
     values: [board_id]
@@ -17,7 +17,7 @@ async function read_todos(board_id) {
   }
 }
 
-async function read_todo(id) {
+async function read_todo({ id }) {
   const query = {
     text: `SELECT id, content, done FROM todos WHERE id = $1 AND active = true `,
     values: [id]
@@ -69,7 +69,7 @@ async function update_todo({ id, content, done }) {
   }
 }
 
-async function destroy_todo(id) {
+async function destroy_todo({ id }) {
   const query = {
     text: `UPDATE todos SET active = false, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id, content, done, board_id`,
     values: [id]
