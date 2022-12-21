@@ -8,11 +8,10 @@ import { create_user, get_user_by } from '../db/queries/users.js'
 import AuthError from '../errors/auth_error.js'
 
 // Import Config
-import { redirect, email_regex } from '../config.js'
+import { email_regex } from '../config.js'
 
 // DotEnv
 const accessTokenSecret = process.env.SECRET_KEY
-const cookie_name = process.env.COOKIE_NAME
 
 // POST /auth/signup
 async function post_signup(req) {
@@ -77,16 +76,14 @@ async function post_login(req) {
 
 // Middlewares
 function authenticate(req, res, next) {
-  const cookies = req.cookies[cookie_name]
   const jwt_auth = req.headers.authorization
 
   // Get token
-  const token = cookies ? cookies : jwt_auth ? get_token_from_jwt(jwt_auth) : null
+  const token = jwt_auth ? get_token_from_jwt(jwt_auth) : null
   if (!token) return new AuthError({ message: 'The token has not been provided.', status: 401 })
 
   // Verify token
   jwt.verify(token, accessTokenSecret, (err, _) => {
-    if (err && cookies) res.clearCookie(cookie_name)
     if (err) return new AuthError({ message: 'The token is not valid.', status: 401 })
 
     req.token = token
