@@ -19,6 +19,7 @@ const redirect = {
 const env_db_config = JSON.parse(process.env.DB_CONFIG)
 
 const port = process.env.PORT || 3000
+const host = process.env.HOST || 'localhost'
 const root = dirname(fileURLToPath(import.meta.url))
 const db_default_options = {
   host: process.env.DB_HOST || 'localhost',
@@ -41,4 +42,4 @@ const corsOptions = {
 
 const db = { ...db_default_options, ...env_db_config }
 
-export { port, root, db, redirect, email_regex, corsOptions }
+export { port, root, db, redirect, email_regex, corsOptions, host }

@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 import express from 'express'
 import cookieParser from 'cookie-parser'
 import expressSanitizer from 'express-sanitizer'
-import { port, corsOptions } from './config.js'
+import { port, corsOptions, host } from './config.js'
 
 // ErrorHandling
 import 'express-async-errors'
@@ -59,4 +59,4 @@ app.get("*", (_, res) => {
 app.use(errorMiddleware)
 
 // Server Running
-app.listen(port, _ => console.log(`Server Running at: http://localhost:${port}/`))
+app.listen(port, _ => console.log(`Server Running at: http://${host}:${port}/`))
