@@ -10,14 +10,16 @@ import AuthError from '../errors/auth_error.js'
 // Import Config
 import { email_regex } from '../config.js'
 
+// Import helpers
+import { sanitize_post_board } from '../helpers/sanitization_helper.js'
+
 // DotEnv
 const accessTokenSecret = process.env.SECRET_KEY
 
 // POST /auth/signup
 async function post_signup(req) {
   const email = req.sanitize(req.body.email)
-  const first_name = req.sanitize(req.body.first_name)
-  const last_name = req.sanitize(req.body.last_name)
+  const { first_name, last_name } = sanitize_post_board({req, params: req.body})
   const { password, password_confirm } = req.body
 
   if (!(email && password)) throw new AuthError({ message: 'Data not formatted properly. Please provide email and password.' })

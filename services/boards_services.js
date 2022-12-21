@@ -1,10 +1,13 @@
-import AccessError from '../errors/access_error.js'
-import ContentError from '../errors/content_error.js'
-import { sanitize_post_board } from '../helpers/sanitization_helper.js'
-
 // Import Queries
 import { read_boards, read_board, create_board, update_board, destroy_board } from '../db/queries/boards.js'
+
+// ErrorHandling
+import AccessError from '../errors/access_error.js'
+import ContentError from '../errors/content_error.js'
+
+// Import helpers
 import isEmpty from '../helpers/is_empty.js'
+import { sanitize_post_board } from '../helpers/sanitization_helper.js'
 
 async function get_boards(req) {
   const { id: user_id } = req.user
@@ -33,7 +36,7 @@ async function get_board(req) {
 
 async function post_board(req) {
   const { id: user_id } = req.user
-  const { name, icon, colour } = sanitize_post_board(req, req.body)
+  const { name, icon, colour } = sanitize_post_board({req, params: req.body})
 
   try {
     if (!name) throw new ContentError({ message: 'Please provide a name.', status: 400 })
@@ -53,7 +56,7 @@ async function put_board(req) {
 
   if (isEmpty(req.body)) { throw new ContentError({ message: "The request's body is empty, nothing to change", status: 400 }) }
 
-  const { name, icon, colour } = sanitize_post_board(req, req.body)
+  const { name, icon, colour } = sanitize_post_board({req, params: req.body})
 
   try {
     const board = await read_board(id, user_id)

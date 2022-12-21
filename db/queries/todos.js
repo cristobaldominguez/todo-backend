@@ -1,6 +1,7 @@
-import AccessError from '../../errors/access_error.js'
-
 import pool from '../pool.js'
+
+// ErrorHandling
+import AccessError from '../../errors/access_error.js'
 import ContentError from '../../errors/content_error.js'
 
 async function read_todos({ board_id }) {

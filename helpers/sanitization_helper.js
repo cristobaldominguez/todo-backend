@@ -1,4 +1,4 @@
-function sanitize_post_board(req, params) {
+function sanitize_post_board({req, params}) {
   const new_obj = {}
   for (const key in params) {
     if (Object.hasOwnProperty.call(params, key)) {
