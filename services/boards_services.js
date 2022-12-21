@@ -1,48 +1,85 @@
+import AccessError from '../errors/access_error.js'
+import ContentError from '../errors/content_error.js'
+import { sanitize_post_board } from '../helpers/sanitization_helper.js'
+
 // Import Queries
 import { read_boards, read_board, create_board, update_board, destroy_board } from '../db/queries/boards.js'
 
-async function get_boards(user_id) {
-  const boards = await read_boards(user_id)
-  return boards
-}
-
-async function get_board(id, user_id) {
-  const board = await read_board(id, user_id)
-  return board
-}
-
-async function post_board({ name, icon, colour, user_id }) {
+async function get_boards(req) {
+  const { id: user_id } = req.user
   try {
-    return await create_board({ name, icon, colour, user_id })
-
-  } catch (error) {
+    return await read_boards(user_id)
     
+  } catch (error) {
+    return error
   }
 }
 
-async function put_board({ id, name, icon, colour, user_id }) {
-  try {
+async function get_board(req) {
+  const { id } = req.params
+  const { id: user_id } = req.user
 
+  try {
     const board = await read_board(id, user_id)
+    if (board.error) throw new AccessError({ message: board.error.message, status: board.error.status })
+
+    return board
+
+  } catch (error) {
+    return error
+  }
+}
+
+async function post_board(req) {
+  const { id: user_id } = req.user
+  const { name, icon, colour } = sanitize_post_board(req, req.body)
+
+  try {
+    if (!name) throw new ContentError({ message: 'Please provide a name.', status: 400 })
+    if (!icon) throw new ContentError({ message: 'Please provide a icon.', status: 400 })
+    if (!colour) throw new ContentError({ message: 'Please provide a colour.', status: 400 })
+
+    return await create_board({ name, icon, colour, user_id })
+
+  } catch (error) {
+    return error
+  }
+}
+
+async function put_board(req) {
+  const { id } = req.params
+  const { id: user_id } = req.user
+  const { name, icon, colour } = sanitize_post_board(req, req.body)
+
+  try {
+    const board = await read_board(id, user_id)
+    if (board.is_an_error) return board
+
     const new_board = { 
       ...board,
       name: name !== undefined ? name : board.name,
       icon: icon !== undefined ? icon : board.icon,
       colour: colour !== undefined ? colour : board.colour
     }
+
     return await update_board(new_board)
 
   } catch (error) {
-    
+    return error
   }
 }
 
-async function delete_board(id) {
+async function delete_board(req) {
+  const { id } = req.params
+  const { id: user_id } = req.user
+  
   try {
-    return await destroy_board(id)
-    
+    if (!id) throw new AccessError({ message: 'Please provide a board id!', status: 400 })
+
+    return await destroy_board(id, user_id)
+
   } catch (error) {
-    
+    return error
   }
 }
 

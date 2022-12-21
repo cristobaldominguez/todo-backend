@@ -21,6 +21,9 @@ import errorMiddleware from './middlewares/error_middleware.js'
 import acceptsFormatMiddleware from './middlewares/accepts_format_middleware.js'
 import setContentType from './middlewares/set_content_type.js'
 
+// Helpers
+import { non_existent_route } from './helpers/non_existent_route.js'
+
 // dotEnv Config
 dotenv.config()
 
@@ -52,10 +55,9 @@ app.use('/boards', authenticate, set_user, boardRoutes)
 app.use('/todos', authenticate, set_user, todosRoutes)
 
 // Redirect to 404 Page
-app.get("*", (_, res) => {
-    res.redirect('/404')
-})
+app.get("*", non_existent_route)
 
+// Error Handler
 app.use(errorMiddleware)
 
 // Server Running

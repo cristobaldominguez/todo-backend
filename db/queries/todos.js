@@ -1,4 +1,5 @@
 import pool from '../pool.js'
+import ContentError from '../../errors/content_error.js'
 
 async function read_todos(board_id) {
   const query = {
@@ -44,6 +45,8 @@ async function create_todo({ content, done, board_id }) {
 
   } catch (e) {
     console.error(e)
+    if (e.code === '22001') { return new ContentError({ message: e.message }) }
+
     return e
   }
 }
@@ -60,6 +63,8 @@ async function update_todo({ id, content, done }) {
 
   } catch (e) {
     console.error(e)
+    if (e.code === '22001') { return new ContentError({ message: e.message }) }
+
     return e
   }
 }

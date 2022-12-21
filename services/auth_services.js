@@ -21,10 +21,9 @@ async function post_signup(req) {
   const last_name = req.sanitize(req.body.last_name)
   const { password, password_confirm } = req.body
 
-  if (!(email && password)) return req.error = new AuthError({ message: 'Data not formatted properly' })
-  if (password !== password_confirm) return req.error = new AuthError({ message: 'Password and password confirm fields doesn\'t match' })
-
-  if (!(first_name || last_name)) return req.error = new AuthError({ message: 'Please provide a full name' })
+  if (!(email && password)) return req.error = new AuthError({ message: 'Data not formatted properly.' })
+  if (password !== password_confirm) return req.error = new AuthError({ message: 'Password and password confirm fields doesn\'t match.' })
+  if (!(first_name || last_name)) return req.error = new AuthError({ message: 'Please provide a full name.' })
 
   // creating a new user
   const user = { email, password, first_name, last_name }
@@ -54,7 +53,7 @@ async function post_login(req) {
   const email = req.sanitize(req.body.email)
   const { password } = req.body
 
-  if (!email.match(email_regex)) { return req.error = new AuthError({ message: 'Email field have not a valid value' }) }
+  if (!email.match(email_regex)) { return req.error = new AuthError({ message: 'Email field have not a valid value.' }) }
 
   const user = await get_user_by({ email })
   if (user) {
@@ -66,11 +65,13 @@ async function post_login(req) {
       return token
 
     } else {
-      return req.error = new AuthError({ message: 'Invalid email or password', status: 400 })
+      // Password incorrect
+      return req.error = new AuthError({ message: 'Invalid email or password.', status: 400 })
     }
 
   } else {
-    return req.error = new AuthError({ message: 'Email does not exist', status: 401 })
+    // Email does not exist
+    return req.error = new AuthError({ message: 'Invalid email or password.', status: 401 })
   }
 }
 
@@ -81,12 +82,12 @@ function authenticate(req, res, next) {
 
   // Get token
   const token = cookies ? cookies : jwt_auth ? get_token_from_jwt(jwt_auth) : null
-  if (!token) return res.redirect(redirect.for_unauthorized)
+  if (!token) return new AuthError({ message: 'The token has not been provided.', status: 401 })
 
   // Verify token
   jwt.verify(token, accessTokenSecret, (err, _) => {
     if (err && cookies) res.clearCookie(cookie_name)
-    if (err) return res.redirect(redirect.for_unauthorized)
+    if (err) return new AuthError({ message: 'The token is not valid.', status: 401 })
 
     req.token = token
     next()

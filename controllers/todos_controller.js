@@ -3,50 +3,42 @@ import todos_services from '../services/todos_services.js'
 // Methods
 // GET /todos/
 async function read_todos(req, res) {
-  const { board_id } = req.params
-  const todos = await todos_services.get_todos(board_id)
+  const todos = await todos_services.get_todos(req)
+  if (todos.is_an_error) throw todos
 
   res.status(200).json(todos)
 }
 
 // GET /todos/1
 async function read_todo(req, res) {
-  const { id } = req.params
-  const board = await todos_services.get_todo(id, req.user.id)
+  const todo = await todos_services.get_todo(req)
+  if (todo.is_an_error) throw todo
 
-  res.status(200).json(board)
+  res.status(200).json(todo)
 }
 
 // POST /todos/
 async function create_todo(req, res) {
-  const { board_id } = req.params
-  const { content, done } = req.body
-
-  if (!content) { return res.status(400).json({ message: 'Please provide a content!' }) }
-
-  const todo = await todos_services.post_todo({ content, done: done || false, board_id })
+  const todo = await todos_services.post_todo(req)
+  if (todo.is_an_error) throw todo
 
   res.status(201).send(JSON.stringify(todo))
 }
 
 // PUT /todos/1
 async function update_todo(req, res) {
-  const { id } = req.params
+  const todo = await todos_services.put_todo(req)
+  if (todo.is_an_error) throw todo
 
-  const board = await todos_services.put_todo({ id, ...req.body })
-
-  res.status(200).json(board)
+  res.status(200).json(todo)
 }
 
 // DELETE /todos/1
 async function destroy_todo(req, res) {
-  const { id } = req.params
+  const todo = await todos_services.delete_todo(req)
+  if (todo.is_an_error) throw todo
 
-  if (!id) { return res.status(400).json({ message: 'Please provide a board id!' }) }
-
-  const board = await todos_services.delete_todo(id)
-
-  res.status(200).json(board)
+  res.status(200).json(todo)
 }
 
 export default {

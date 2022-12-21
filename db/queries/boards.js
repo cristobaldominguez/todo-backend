@@ -1,4 +1,6 @@
 import pool from '../pool.js'
+import AccessError from '../../errors/access_error.js'
+import ContentError from '../../errors/content_error.js'
 
 async function read_boards(user_id) {
   const query = {
@@ -12,7 +14,7 @@ async function read_boards(user_id) {
 
   } catch (e) {
     console.error(e)
-    return e
+    return new Error(e.message)
   }
 }
 
@@ -22,8 +24,18 @@ async function read_board(id, user_id) {
     values: [id, user_id]
   }
 
+  const if_exists = {
+    text: `SELECT 1 FROM boards WHERE id = $1 AND active = true`,
+    values: [id]
+  }
+
   try {
+    const exists = await pool.query(if_exists)
+    if (!Boolean(exists.rowCount)) throw new AccessError({ message: 'Board Not Found.', status: 403 })
+
     const result = await pool.query(query)
+    if (result.rows.length < 1) throw new AccessError({ message: 'Have no access to this board.', status: 403 })
+
     return result.rows[0]
 
   } catch (e) {
@@ -43,6 +55,8 @@ async function create_board({ name, icon, colour, user_id }) {
     return result.rows[0]
 
   } catch (e) {
+    if (e.code === '22001') return new ContentError({ message: e.message })
+
     console.error(e)
     return e
   }
@@ -60,18 +74,30 @@ async function update_board({ id, name, icon, colour }) {
 
   } catch (e) {
     console.error(e)
+    if (e.code === '22001') return new ContentError({ message: e.message })
+
     return e
   }
 }
 
-async function destroy_board(id) {
+async function destroy_board(id, user_id) {
   const query = {
     text: `UPDATE boards SET active = false, updated_at = CURRENT_TIMESTAMP WHERE id = $1 AND user_id = $2 RETURNING id, name, icon, colour`,
+    values: [id, user_id]
+  }
+
+  const if_exists = {
+    text: `SELECT 1 FROM boards WHERE id = $1 AND active = true`,
     values: [id]
   }
 
   try {
+    const exists = await pool.query(if_exists)
+    if (!Boolean(exists.rowCount)) throw new AccessError({ message: 'Board Not Found.', status: 403 })
+
     const result = await pool.query(query)
+    if (result.rows.length < 1) throw new AccessError({ message: 'Have no access to this board.', status: 403 })
+
     return result.rows[0]
 
   } catch (e) {
