@@ -1,3 +1,5 @@
+import AccessError from '../../errors/access_error.js'
+
 import pool from '../pool.js'
 import ContentError from '../../errors/content_error.js'
 
@@ -25,6 +27,8 @@ async function read_todo({ id }) {
 
   try {
     const result = await pool.query(query)
+    if (result.rows.length < 1) throw new AccessError({ message: 'ToDo Not Found.', status: 404 })
+
     return result.rows[0]
 
   } catch (e) {
@@ -75,7 +79,15 @@ async function destroy_todo({ id }) {
     values: [id]
   }
 
+  const if_exists = {
+    text: `SELECT 1 FROM todos WHERE id = $1 AND active = true`,
+    values: [id]
+  }
+
   try {
+    const exists = await pool.query(if_exists)
+    if (!Boolean(exists.rowCount)) throw new AccessError({ message: 'ToDo Not Found.', status: 404 })
+
     const result = await pool.query(query)
     return result.rows[0]
 

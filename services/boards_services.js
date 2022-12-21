@@ -4,6 +4,7 @@ import { sanitize_post_board } from '../helpers/sanitization_helper.js'
 
 // Import Queries
 import { read_boards, read_board, create_board, update_board, destroy_board } from '../db/queries/boards.js'
+import isEmpty from '../helpers/is_empty.js'
 
 async function get_boards(req) {
   const { id: user_id } = req.user
@@ -49,6 +50,9 @@ async function post_board(req) {
 async function put_board(req) {
   const { id } = req.params
   const { id: user_id } = req.user
+
+  if (isEmpty(req.body)) { throw new ContentError({ message: "The request's body is empty, nothing to change", status: 400 }) }
+
   const { name, icon, colour } = sanitize_post_board(req, req.body)
 
   try {

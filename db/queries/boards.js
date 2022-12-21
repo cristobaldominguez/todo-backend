@@ -86,21 +86,35 @@ async function destroy_board({ id, user_id }) {
     values: [id, user_id]
   }
 
+  const nested_resources = {
+    text: `UPDATE todos SET active = false, updated_at = CURRENT_TIMESTAMP WHERE board_id = $1`,
+    values: [id]
+  }
+
   const if_exists = {
     text: `SELECT 1 FROM boards WHERE id = $1 AND active = true`,
     values: [id]
   }
 
   try {
-    const exists = await pool.query(if_exists)
-    if (!Boolean(exists.rowCount)) throw new AccessError({ message: 'Board Not Found.', status: 403 })
+    // Begin Transaction
+    await pool.query('BEGIN')
 
+    const exists = await pool.query(if_exists)
     const result = await pool.query(query)
+    await pool.query(nested_resources)
+
+    // Commit Transaction
+    await pool.query('COMMIT')
+
+    if (!Boolean(exists.rowCount)) throw new AccessError({ message: 'Board Not Found.', status: 403 })
     if (result.rows.length < 1) throw new AccessError({ message: 'Have no access to this board.', status: 403 })
 
     return result.rows[0]
-
+    
   } catch (e) {
+    // Transaction Rollback
+    await pool.query('ROLLBACK')
     console.error(e)
     return e
   }

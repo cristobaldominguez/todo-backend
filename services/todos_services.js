@@ -1,6 +1,10 @@
 // Import Queries
 import { read_todos, read_todo, create_todo, update_todo, destroy_todo } from '../db/queries/todos.js'
 
+import { sanitize_post_board } from '../helpers/sanitization_helper.js'
+import ContentError from '../errors/content_error.js'
+import isEmpty from '../helpers/is_empty.js'
+
 async function get_todos(req) {
   const { board_id } = req.params
 
@@ -15,9 +19,9 @@ async function get_todo(req) {
 
 async function post_todo(req) {
   const { board_id } = req.params
-  const { content, done } = req.body
+  const { content, done } = sanitize_post_board(req, req.body)
 
-  if (!content) { return res.status(400).json({ message: 'Please provide a content!' }) }
+  if (!content) { throw new ContentError({ message: 'Please provide a content!' }) }
 
   try {
     return await create_todo({ content, done: done || false, board_id })
@@ -29,7 +33,9 @@ async function post_todo(req) {
 
 async function put_todo(req) {
   const { id } = req.params
-  const { content, done } = req.body
+  if (isEmpty(req.body)) { throw new ContentError({ message: "The request's body is empty, nothing to change", status: 400 }) }
+  
+  const { content, done } = sanitize_post_board(req, req.body)
 
   try {
     const todo = await read_todo({ id })
@@ -48,7 +54,7 @@ async function put_todo(req) {
 
 async function delete_todo(req) {
   const { id } = req.params
-  if (!id) { return res.status(400).json({ message: 'Please provide a board id!' }) }
+  if (!id) { throw new ContentError({ message: 'Please provide a board id!' }) }
 
   try {
     return await destroy_todo({ id })

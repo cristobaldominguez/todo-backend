@@ -20,9 +20,9 @@ async function post_signup(req) {
   const last_name = req.sanitize(req.body.last_name)
   const { password, password_confirm } = req.body
 
-  if (!(email && password)) return req.error = new AuthError({ message: 'Data not formatted properly.' })
-  if (password !== password_confirm) return req.error = new AuthError({ message: 'Password and password confirm fields doesn\'t match.' })
-  if (!(first_name || last_name)) return req.error = new AuthError({ message: 'Please provide a full name.' })
+  if (!(email && password)) throw new AuthError({ message: 'Data not formatted properly. Please provide email and password.' })
+  if (password !== password_confirm) throw new AuthError({ message: 'Password and password confirm fields doesn\'t match.' })
+  if (!(first_name || last_name)) throw new AuthError({ message: 'Please provide a full name.' })
 
   // creating a new user
   const user = { email, password, first_name, last_name }
@@ -39,11 +39,11 @@ async function post_signup(req) {
     return token
 
   } catch (err) {
-    if (err instanceof AuthError) { 
-      return req.error = err
+    if (err.is_an_error) { 
+      return err
     }
 
-    return req.error = new Error()
+    return new Error()
   }
 }
 
@@ -52,7 +52,7 @@ async function post_login(req) {
   const email = req.sanitize(req.body.email)
   const { password } = req.body
 
-  if (!email.match(email_regex)) { return req.error = new AuthError({ message: 'Email field have not a valid value.' }) }
+  if (!email.match(email_regex)) { throw new AuthError({ message: 'Email field have not a valid value.' }) }
 
   const user = await get_user_by({ email })
   if (user) {
@@ -65,12 +65,12 @@ async function post_login(req) {
 
     } else {
       // Password incorrect
-      return req.error = new AuthError({ message: 'Invalid email or password.', status: 400 })
+      throw new AuthError({ message: 'Invalid email or password.', status: 400 })
     }
 
   } else {
     // Email does not exist
-    return req.error = new AuthError({ message: 'Invalid email or password.', status: 401 })
+    throw new AuthError({ message: 'Invalid email or password.', status: 401 })
   }
 }
 
@@ -80,11 +80,11 @@ function authenticate(req, res, next) {
 
   // Get token
   const token = jwt_auth ? get_token_from_jwt(jwt_auth) : null
-  if (!token) return new AuthError({ message: 'The token has not been provided.', status: 401 })
+  if (!token) throw new AuthError({ message: 'The token has not been provided.', status: 401 })
 
   // Verify token
   jwt.verify(token, accessTokenSecret, (err, _) => {
-    if (err) return new AuthError({ message: 'The token is not valid.', status: 401 })
+    if (err) throw new AuthError({ message: 'The token is not valid.', status: 401 })
 
     req.token = token
     next()
@@ -94,10 +94,13 @@ function authenticate(req, res, next) {
 function set_user(req, _, next) {
   if (!req.token) return req.user = null
 
+  // Verify validity of token
   jwt.verify(req.token, accessTokenSecret, (err, user) => {
     if (err) return req.user = null
 
+    // Sets user
     req.user = {...user, name: `${user.first_name} ${user.last_name}`}
+    console.log(req.user)
     next()
   })
 }
