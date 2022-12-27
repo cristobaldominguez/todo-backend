@@ -102,7 +102,6 @@ function set_user(req, _, next) {
 
     // Sets user
     req.user = {...user, name: `${user.first_name} ${user.last_name}`}
-    console.log(req.user)
     next()
   })
 }
