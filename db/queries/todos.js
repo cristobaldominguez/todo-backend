@@ -6,7 +6,7 @@ import ContentError from '../../errors/content_error.js'
 
 async function read_todos({ board_id }) {
   const query = {
-    text: `SELECT id, content, done, board_id FROM todos WHERE active = true AND board_id = $1 order by id`,
+    text: `SELECT id, content, done, board_id, sort FROM todos WHERE active = true AND board_id = $1 order by sort`,
     values: [board_id]
   }
 
@@ -22,7 +22,7 @@ async function read_todos({ board_id }) {
 
 async function read_todo({ id }) {
   const query = {
-    text: `SELECT id, content, done FROM todos WHERE id = $1 AND active = true `,
+    text: `SELECT id, content, done, sort FROM todos WHERE id = $1 AND active = true `,
     values: [id]
   }
 
@@ -38,10 +38,10 @@ async function read_todo({ id }) {
   }
 }
 
-async function create_todo({ content, done, board_id }) {
+async function create_todo({ content, done, sort, board_id }) {
   const query = {
-    text: `INSERT INTO todos (content, done, board_id) VALUES ($1, $2, $3) RETURNING id, content, done, board_id`,
-    values: [content, done, board_id]
+    text: `INSERT INTO todos (content, done, sort, board_id) VALUES ($1, $2, $3, $4) RETURNING id, content, done, sort, board_id`,
+    values: [content, done, sort, board_id]
   }
 
   try {
@@ -56,10 +56,10 @@ async function create_todo({ content, done, board_id }) {
   }
 }
 
-async function update_todo({ id, content, done }) {
+async function update_todo({ id, content, done, sort }) {
   const query = {
-    text: `UPDATE todos SET content = $2, done = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id, content, done, board_id`,
-    values: [id, content, done]
+    text: `UPDATE todos SET content = $2, done = $3, sort = $4, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id, content, done, sort, board_id`,
+    values: [id, content, done, sort]
   }
 
   try {
@@ -76,7 +76,7 @@ async function update_todo({ id, content, done }) {
 
 async function destroy_todo({ id }) {
   const query = {
-    text: `UPDATE todos SET active = false, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id, content, done, board_id`,
+    text: `UPDATE todos SET active = false, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id, content, done, sort, board_id`,
     values: [id]
   }
 

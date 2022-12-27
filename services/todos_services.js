@@ -22,12 +22,12 @@ async function get_todo(req) {
 
 async function post_todo(req) {
   const { board_id } = req.params
-  const { content, done } = sanitize_post_board({req, params: req.body})
+  const { content, done, sort } = sanitize_post_board({req, params: req.body})
 
   if (!content) { throw new ContentError({ message: 'Please provide a content!' }) }
 
   try {
-    return await create_todo({ content, done: done || false, board_id })
+    return await create_todo({ content, done: done || false, sort, board_id })
 
   } catch (error) {
     return error
@@ -38,14 +38,15 @@ async function put_todo(req) {
   const { id } = req.params
   if (isEmpty(req.body)) { throw new ContentError({ message: "The request's body is empty, nothing to change", status: 400 }) }
   
-  const { content, done } = sanitize_post_board({req, params: req.body})
+  const { content, done, sort } = sanitize_post_board({req, params: req.body})
 
   try {
     const todo = await read_todo({ id })
     const new_todo = { 
       ...todo,
       content: content || todo.content,
-      done: done !== undefined ? done : todo.done
+      done: done !== undefined ? done : todo.done,
+      sort: sort || todo.sort
     }
 
     return await update_todo(new_todo)
