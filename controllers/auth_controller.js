@@ -15,7 +15,7 @@ async function post_login(req, res) {
   const token = await auth_services.post_login(req, res)
   if (token.is_an_error) throw token
 
-  res.status(200).json({ token })
+  res.status(200).json(token)
 }
 
 export default {
