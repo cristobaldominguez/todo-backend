@@ -7,7 +7,7 @@ import ContentError from '../../errors/content_error.js'
 
 async function read_boards({ user_id }) {
   const query = {
-    text: `SELECT id, name, icon, colour FROM boards WHERE active = true AND user_id = $1 order by id`,
+    text: `SELECT boards.id, name, icon, colour, MAX(todos.updated_at) AS edited, boards.updated_at AS created FROM boards LEFT OUTER JOIN todos ON boards.id = todos.board_id WHERE boards.active = true AND user_id = $1 GROUP BY boards.id ORDER BY boards.id`,
     values: [user_id]
   }
 
