@@ -39,11 +39,13 @@ async function post_signup(req) {
     const saved_user = await create_user(user)
     const token = jwt.sign(await saved_user, accessTokenSecret)
     return {
-      id: user.id,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      full_name: `${user.first_name} ${user.last_name}`,
-      email: user.email,
+      user: {
+        id: user.id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        full_name: `${user.first_name} ${user.last_name}`,
+        email: user.email,
+      },
       accessToken: token
     }
 
@@ -71,11 +73,13 @@ async function post_login(req) {
     if (validPassword) {
       const token = jwt.sign(user, accessTokenSecret)
       return {
-        id: user.id,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        full_name: `${user.first_name} ${user.last_name}`,
-        email: user.email,
+        user: {
+          id: user.id,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          full_name: `${user.first_name} ${user.last_name}`,
+          email: user.email,
+        },
         accessToken: token
       }
 
