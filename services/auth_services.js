@@ -18,7 +18,7 @@ const accessTokenSecret = process.env.SECRET_KEY
 
 // POST /auth/signup
 async function post_signup(req) {
-  const email = req.sanitize(req.body.email)
+  const email = req.sanitize(req.body.email).toLowerCase()
   const { first_name, last_name } = sanitize_post_board({req, params: req.body})
   const { password, password_confirm } = req.body
 
@@ -60,7 +60,7 @@ async function post_signup(req) {
 
 // POST /auth/login
 async function post_login(req) {
-  const email = req.sanitize(req.body.email)
+  const email = req.sanitize(req.body.email).toLowerCase()
   const { password } = req.body
 
   if (!email.match(email_regex)) { throw new AuthError({ message: 'Email field have not a valid value.' }) }
