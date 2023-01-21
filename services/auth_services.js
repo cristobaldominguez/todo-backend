@@ -22,6 +22,8 @@ async function post_signup(req) {
   const { first_name, last_name } = sanitize_post_board({req, params: req.body})
   const { password, password_confirm } = req.body
 
+  if (!email.match(email_regex)) { throw new AuthError({ message: 'Email field have not a valid value.' }) }
+
   if (!(email && password)) throw new AuthError({ message: 'Data not formatted properly. Please provide email and password.' })
   if (password !== password_confirm) throw new AuthError({ message: 'Password and password confirm fields doesn\'t match.' })
   if (!(first_name || last_name)) throw new AuthError({ message: 'Please provide a full name.' })
@@ -40,7 +42,7 @@ async function post_signup(req) {
     const token = jwt.sign(await saved_user, accessTokenSecret)
     return {
       user: {
-        id: user.id,
+        id: await saved_user.id,
         first_name: user.first_name,
         last_name: user.last_name,
         full_name: `${user.first_name} ${user.last_name}`,

@@ -4,10 +4,10 @@ import auth_services from '../services/auth_services.js'
 // Methods
 // POST /auth/signup
 async function post_signup(req, res) {
-  const token = await auth_services.post_signup(req, res)
-  if (token.is_an_error) throw token
+  const data = await auth_services.post_signup(req, res)
+  if (data.is_an_error) throw data
 
-  res.status(200).json({ token })
+  res.status(200).json({ ...data })
 }
 
 // POST /auth/login
