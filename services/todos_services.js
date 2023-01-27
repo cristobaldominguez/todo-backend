@@ -40,7 +40,7 @@ async function put_todo(req) {
   if (isEmpty(req.body)) { throw new ContentError({ message: "The request's body is empty, nothing to change", status: 400 }) }
   
   const { content: raw_content, done, sort } = sanitize_post_board({req, params: req.body})
-  const content = sanitize_html(raw_content)
+  const content = raw_content !== undefined ? sanitize_html(raw_content) : undefined
 
   try {
     const todo = await read_todo({ id })
@@ -51,7 +51,8 @@ async function put_todo(req) {
       sort: sort || todo.sort
     }
 
-    return await update_todo(new_todo)
+    const response = await update_todo(new_todo)
+    return response[0]
 
   } catch (error) {
     return error
