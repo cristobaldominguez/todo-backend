@@ -5,7 +5,7 @@ import { read_todos, read_todo, create_todo, update_todo, destroy_todo } from '.
 import ContentError from '../errors/content_error.js'
 
 // Import Helpers
-import { sanitize_post_board } from '../helpers/sanitization_helper.js'
+import { sanitize_post_board, sanitize_html } from '../helpers/sanitization_helper.js'
 import isEmpty from '../helpers/is_empty.js'
 
 async function get_todos(req) {
@@ -22,7 +22,8 @@ async function get_todo(req) {
 
 async function post_todo(req) {
   const { board_id } = req.params
-  const { content, done, sort } = sanitize_post_board({req, params: req.body})
+  const { content: raw_content, done, sort } = sanitize_post_board({req, params: req.body})
+  const content = sanitize_html(raw_content)
 
   if (!content) { throw new ContentError({ message: 'Please provide a content!' }) }
 
@@ -38,7 +39,8 @@ async function put_todo(req) {
   const { id } = req.params
   if (isEmpty(req.body)) { throw new ContentError({ message: "The request's body is empty, nothing to change", status: 400 }) }
   
-  const { content, done, sort } = sanitize_post_board({req, params: req.body})
+  const { content: raw_content, done, sort } = sanitize_post_board({req, params: req.body})
+  const content = sanitize_html(raw_content)
 
   try {
     const todo = await read_todo({ id })

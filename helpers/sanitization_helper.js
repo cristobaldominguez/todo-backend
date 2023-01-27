@@ -9,6 +9,12 @@ function sanitize_post_board({req, params}) {
   return new_obj
 }
 
+function sanitize_html(strInputCode) {
+  const clean_text = strInputCode.replace(/<\/?[^>]+(>|$)/g, "")
+  return clean_text
+}
+
 export {
-  sanitize_post_board
+  sanitize_post_board,
+  sanitize_html
 }
