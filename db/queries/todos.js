@@ -98,10 +98,27 @@ async function destroy_todo({ id }) {
   }
 }
 
+async function count_todos(board_id) {
+  const query = {
+    text: `SELECT COUNT(id) FROM todos WHERE board_id = $1`,
+    values: [board_id]
+  }
+
+  try {
+    const result = await pool.query(query)
+    return result.rows[0].count
+
+  } catch (e) {
+    console.error(e)
+    return e
+  }
+}
+
 export {
   read_todo,
   read_todos,
   create_todo,
   update_todo,
-  destroy_todo
+  destroy_todo,
+  count_todos
 }

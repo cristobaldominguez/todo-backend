@@ -4,9 +4,8 @@ import { read_todos, read_todo, create_todo, update_todo, destroy_todo } from '.
 // ErrorHandling
 import ContentError from '../errors/content_error.js'
 
-// Import Helpers
-import { sanitize_post_board, sanitize_html } from '../helpers/sanitization_helper.js'
-import isEmpty from '../helpers/is_empty.js'
+// Import Services
+import sanitizeTodosService from './sanitize_todos_service.js'
 
 async function get_todos(req) {
   const { board_id } = req.params
@@ -22,13 +21,10 @@ async function get_todo(req) {
 
 async function post_todo(req) {
   const { board_id } = req.params
-  const { content: raw_content, done, sort } = sanitize_post_board({req, params: req.body})
-  const content = sanitize_html(raw_content)
-
-  if (!content) { throw new ContentError({ message: 'Please provide a content!' }) }
 
   try {
-    return await create_todo({ content, done: done || false, sort, board_id })
+    const { content, done, sort } = await sanitizeTodosService(req)
+    return await create_todo({ content, sort, board_id, done: done || false })
 
   } catch (error) {
     return error
@@ -37,12 +33,10 @@ async function post_todo(req) {
 
 async function put_todo(req) {
   const { id } = req.params
-  if (isEmpty(req.body)) { throw new ContentError({ message: "The request's body is empty, nothing to change", status: 400 }) }
   
-  const { content: raw_content, done, sort } = sanitize_post_board({req, params: req.body})
-  const content = raw_content !== undefined ? sanitize_html(raw_content) : undefined
-
   try {
+    const { content, done, sort } = await sanitizeTodosService(req)
+
     const todo = await read_todo({ id })
     const new_todo = { 
       ...todo,
