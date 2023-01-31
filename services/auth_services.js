@@ -39,17 +39,7 @@ async function post_signup(req) {
 
   try {
     const saved_user = await create_user(user)
-    const token = jwt.sign(await saved_user, accessTokenSecret)
-    return {
-      user: {
-        id: await saved_user.id,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        full_name: `${user.first_name} ${user.last_name}`,
-        email: user.email,
-      },
-      accessToken: token
-    }
+    return generate_token({ user: await saved_user })
 
   } catch (err) {
     if (err.is_an_error) { 
@@ -73,17 +63,7 @@ async function post_login(req) {
     const validPassword = await bcrypt.compare(password, user.password)
 
     if (validPassword) {
-      const token = jwt.sign(user, accessTokenSecret)
-      return {
-        user: {
-          id: user.id,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          full_name: `${user.first_name} ${user.last_name}`,
-          email: user.email,
-        },
-        accessToken: token
-      }
+      return generate_token({ user })
 
     } else {
       // Password incorrect
@@ -130,9 +110,25 @@ function get_token_from_jwt(bearer) {
   return bearer.split(' ')[1]
 }
 
+function generate_token({ user }) {
+  const token = jwt.sign(user, accessTokenSecret)
+  return {
+    user: {
+      id: user.id,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      full_name: `${user.first_name} ${user.last_name}`,
+      email: user.email,
+      dark_mode: user.dark_mode
+    },
+    accessToken: token
+  }
+}
+
 export {
+  set_user,
   authenticate,
-  set_user
+  generate_token
 }
 
 export default { post_signup, post_login }
