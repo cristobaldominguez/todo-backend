@@ -10,6 +10,7 @@ import 'express-async-errors'
 
 // Routes
 import authRoutes from './routes/auth.js'
+import usersRoutes from './routes/users.js'
 import boardRoutes from './routes/board.js'
 import todosRoutes from './routes/todos.js'
 
@@ -51,6 +52,7 @@ app.use(express.static('public'))
 
 // App Routes
 app.use('/auth', authRoutes)
+app.use('/users', authenticate, set_user, usersRoutes)
 app.use('/boards', authenticate, set_user, boardRoutes)
 app.use('/todos', authenticate, set_user, todosRoutes)
 

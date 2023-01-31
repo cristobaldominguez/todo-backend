@@ -21,6 +21,24 @@ async function create_user({ email, password, first_name, last_name }) {
   }
 }
 
+async function put_user(id, user_data) {
+  const query_str = Object.entries(user_data).map(arr => `${arr[0]} = '${arr[1]}'`).join(', ')
+
+  const query = {
+    text: `UPDATE users SET ${query_str}, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id, email, first_name, last_name, dark_mode`,
+    values: [id]
+  }
+
+  try {
+    const result = await pool.query(query)
+    return result.rows[0]
+
+  } catch (e) {
+    if (e.code === '22P02') { throw new AuthError({ message: 'Boolean value is not valid' }) }
+    return e
+  }
+}
+
 async function get_user_by(obj) {
   // Maps every key/value into array of strings and then into string
   const query_str = Object.entries(obj).map(arr => `${arr[0]} = '${arr[1]}'`).join(', ')
@@ -40,6 +58,7 @@ async function get_user_by(obj) {
 }
 
 export {
+  put_user,
   create_user,
   get_user_by
 }
