@@ -7,7 +7,7 @@ import ContentError from '../errors/content_error.js'
 
 // Import helpers
 import isEmpty from '../helpers/is_empty.js'
-import { sanitize_html, sanitize_post_board } from '../helpers/sanitization_helper.js'
+import { remove_html_from_string, sanitize_strings } from '../helpers/sanitization_helper.js'
 
 async function get_boards(req) {
   const { id: user_id } = req.user
@@ -36,10 +36,10 @@ async function get_board(req) {
 
 async function post_board(req) {
   const { id: user_id } = req.user
-  const { name: raw_name, icon: raw_icon, colour: raw_colour } = sanitize_post_board({req, params: req.body})
-  const name = sanitize_html(raw_name)
-  const icon = sanitize_html(raw_icon)
-  const colour = sanitize_html(raw_colour)
+  const { name: raw_name, icon: raw_icon, colour: raw_colour } = sanitize_strings({req, params: req.body})
+  const name = remove_html_from_string(raw_name)
+  const icon = remove_html_from_string(raw_icon)
+  const colour = remove_html_from_string(raw_colour)
 
   try {
     if (!name) throw new ContentError({ message: 'Please provide a name.', status: 400 })
@@ -59,10 +59,10 @@ async function put_board(req) {
 
   if (isEmpty(req.body)) { throw new ContentError({ message: "The request's body is empty, nothing to change", status: 400 }) }
 
-  const { name: raw_name, icon: raw_icon, colour: raw_colour } = sanitize_post_board({req, params: req.body})
-  const name = sanitize_html(raw_name)
-  const icon = sanitize_html(raw_icon)
-  const colour = sanitize_html(raw_colour)
+  const { name: raw_name, icon: raw_icon, colour: raw_colour } = sanitize_strings({req, params: req.body})
+  const name = remove_html_from_string(raw_name)
+  const icon = remove_html_from_string(raw_icon)
+  const colour = remove_html_from_string(raw_colour)
 
   try {
     const board = await read_board(id, user_id)

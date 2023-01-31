@@ -1,4 +1,4 @@
-function sanitize_post_board({req, params}) {
+function sanitize_strings({req, params}) {
   const new_obj = {}
   for (const key in params) {
     if (Object.hasOwnProperty.call(params, key)) {
@@ -9,12 +9,12 @@ function sanitize_post_board({req, params}) {
   return new_obj
 }
 
-function sanitize_html(strInputCode) {
+function remove_html_from_string(strInputCode) {
   const clean_text = strInputCode.replace(/<\/?[^>]+(>|$)/g, "")
   return clean_text
 }
 
 export {
-  sanitize_post_board,
-  sanitize_html
+  sanitize_strings,
+  remove_html_from_string
 }

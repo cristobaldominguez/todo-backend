@@ -11,7 +11,7 @@ import AuthError from '../errors/auth_error.js'
 import { email_regex } from '../config.js'
 
 // Import helpers
-import { sanitize_post_board } from '../helpers/sanitization_helper.js'
+import { sanitize_strings } from '../helpers/sanitization_helper.js'
 
 // DotEnv
 const accessTokenSecret = process.env.SECRET_KEY
@@ -19,7 +19,7 @@ const accessTokenSecret = process.env.SECRET_KEY
 // POST /auth/signup
 async function post_signup(req) {
   const email = req.sanitize(req.body.email).toLowerCase()
-  const { first_name, last_name } = sanitize_post_board({req, params: req.body})
+  const { first_name, last_name } = sanitize_strings({req, params: req.body})
   const { password, password_confirm } = req.body
 
   if (!email.match(email_regex)) { throw new AuthError({ message: 'Email field have not a valid value.' }) }
