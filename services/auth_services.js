@@ -119,7 +119,11 @@ function generate_token({ user }) {
       last_name: user.last_name,
       full_name: `${user.first_name} ${user.last_name}`,
       email: user.email,
-      dark_mode: user.dark_mode
+      dark_mode: user.dark_mode,
+      photo: {
+        filename: user.filename || null,
+        extension: user.extension || null
+      }
     },
     accessToken: token
   }

@@ -1,5 +1,8 @@
 import express from 'express'
 
+// Import Middlewares
+import upload from '../middlewares/upload_middleware.js'
+
 // Import Controllers
 import { non_existent_route } from '../helpers/non_existent_route.js'
 import users_controller from '../controllers/users_controller.js'
@@ -17,8 +20,8 @@ router.route('/')
 // /users/1
 router.route('/:id')
   .get(non_existent_route)
-  .put(check_param, users_controller.update_user)
-  .patch(check_param, users_controller.update_user)
+  .put(check_param, upload.single('photo'), users_controller.update_user)
+  .patch(check_param, upload.single('photo'), users_controller.update_user)
   .delete(non_existent_route)
 
 export default router

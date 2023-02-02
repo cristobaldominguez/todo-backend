@@ -125,3 +125,6 @@ dist
 
 # Postgres
 logfile
+
+# Multer
+/uploads/

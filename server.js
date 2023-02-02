@@ -44,6 +44,9 @@ app.use(acceptsFormatMiddleware)
 // express-sanitizer middleware
 app.use(expressSanitizer())
 
+// Profiles Folder
+app.use(express.static('uploads'))
+
 // Sets Content-Type header
 app.use(setContentType)
 

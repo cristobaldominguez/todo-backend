@@ -40,6 +40,13 @@ const corsOptions = {
   }
 }
 
+const image_sizes = [
+  { size: 50, sufix: '@1x' },
+  { size: 100, sufix: '@2x' },
+  { size: 150, sufix: '@3x' },
+  { size: 200, sufix: '@4x' }
+]
+
 const db = { ...db_default_options, ...env_db_config }
 
-export { port, root, db, redirect, email_regex, corsOptions, host }
+export { port, root, db, redirect, email_regex, corsOptions, host, image_sizes }
