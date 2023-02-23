@@ -6,6 +6,7 @@ import { create_user, get_user_by } from '../db/queries/users.js'
 
 // ErrorHandling
 import AuthError from '../errors/auth_error.js'
+import ValidationError from '../errors/validation_error.js'
 
 // Import Config
 import { email_regex } from '../config.js'
@@ -18,6 +19,12 @@ const accessTokenSecret = process.env.SECRET_KEY
 
 // POST /auth/signup
 async function post_signup(req) {
+  if (!req.body.email) throw new ValidationError({ message: 'Email must to be present.', field: 'email' })
+  if (!req.body.first_name) throw new ValidationError({ message: 'First name must to be present.', field: 'first_name' })
+  if (!req.body.last_name) throw new ValidationError({ message: 'Last name must to be present.', field: 'last_name' })
+  if (!req.body.password) throw new ValidationError({ message: 'Password must to be present.', field: 'password' })
+  if (!req.body.password_confirm) throw new ValidationError({ message: 'Password Confirm must to be present.', field: 'password_confirm' })
+
   const email = req.sanitize(req.body.email).toLowerCase()
   const { first_name, last_name } = sanitize_strings({req, params: req.body})
   const { password, password_confirm } = req.body
@@ -52,6 +59,9 @@ async function post_signup(req) {
 
 // POST /auth/login
 async function post_login(req) {
+  if (!req.body.email) throw new ValidationError({ message: 'Email must to be present.' })
+  if (!req.body.password) throw new ValidationError({ message: 'Password must to be present.' })
+
   const email = req.sanitize(req.body.email).toLowerCase()
   const { password } = req.body
 
