@@ -60,7 +60,7 @@ app.use('/boards', authenticate, set_user, boardRoutes)
 app.use('/todos', authenticate, set_user, todosRoutes)
 
 // Redirect to 404 Page
-app.get("*", non_existent_route)
+app.get('*', non_existent_route)
 
 // Error Handler
 app.use(errorMiddleware)
